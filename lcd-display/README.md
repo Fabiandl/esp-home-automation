@@ -19,7 +19,7 @@ I used ESPHome with Home Assistant.
 
 ## Step-by-Step Instructions
 
-## 1. Wiring
+### 1. Wiring
 <img src="images/lcdDisplay_wiring.png" alt="lcdDisplay_wiring" width="700"/>
 
 
@@ -30,7 +30,7 @@ I used ESPHome with Home Assistant.
 | D2               | SDA                          |
 | D1               | SCL                          |
 
-## 2. Setup in ESPHome
+### 2. Setup in ESPHome
 1. Connect the wired ESP-Board to your Home Assistant via USB
 2. Open "ESPHome Builder" (if not installed, see: [Installation](https://esphome.io/guides/getting_started_hassio.html))
 3. Use "NEW DEVICE" and add a name for example "LcdAquarium8266"
@@ -40,7 +40,7 @@ I used ESPHome with Home Assistant.
 
 You will now see the flashing and installation process of your ESP board.
 
-## 3. Configuration with Code
+### 3. Configuration with Code
 ESPHome automatically generates a standard configuration for your ESP board.
 Now we need to tell the board how to communicate with the LCD display and configure the wiring.
 
@@ -48,7 +48,7 @@ To edit the code, click EDIT on your new device in ESPHome.
 
 You can use my code: [lcdaquarium8266.yaml](lcdaquarium8266.yaml)
 
-### Explanation:
+#### Explanation:
 You just have to add all the code below `# --------- custom code below here ---------`. Everything above is already set up by ESPHome during initial installation.
 
 In my use case, I wanted to show three sensor states from Home Assistant and the last update time of one of them.
@@ -61,7 +61,7 @@ To find the correct address, you can uncomment line 64:
 
 and check the logs during reinstallation.
 
-## 4. Getting States from Home Assistant
+### 4. Getting States from Home Assistant
 You might see `NaN` values instead of the actual sensor states from Home Assistant.
 To allow the ESP board to access them, you must add the new device in Home Assistant.
 
