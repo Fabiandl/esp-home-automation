@@ -1,0 +1,85 @@
+esphome:
+  name: lcdaquarium8266
+  friendly_name: LcdAquarium8266
+
+esp8266:
+  board: d1_mini
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "{API-Key of Home Assistant}" # Set by ESPHome
+
+ota:
+  - platform: esphome
+    password: "{Platform Password}" # Set by ESPHome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "{SSID}" # Set by ESPHome
+    password: "{Password}" # Set by ESPHome
+
+captive_portal:
+
+# --------- custom code below here ---------
+
+# define update-timestamp var
+globals:
+  - id: last_update_timestamp
+    type: unsigned long
+    restore_value: no
+    initial_value: '0'
+
+# Sensors for LCD-Display
+sensor:
+  # air temp
+  - platform: homeassistant
+    id: temp_air
+    entity_id: sensor.thermometeresp8266_air # TODO: add your own sensor
+    # set update-timestamp var on value change
+    on_value:
+      then:
+        - lambda: |-
+            id(last_update_timestamp) = millis() / 1000;
+    # water temp
+  - platform: homeassistant
+    id: temp_water
+    entity_id: sensor.thermometeresp8266_water # TODO: add your own sensor
+    # water height
+  - platform: homeassistant
+    id: water_height
+    entity_id: sensor.water_height # TODO: add your own sensor
+
+# LCD Display connectors on ESP-Baord
+i2c:
+  sda: D2
+  scl: D1
+# scan: true # only necessary to find address, see below
+
+# LCD Display Config
+display:
+  - platform: lcd_pcf8574
+    dimensions: 16x2
+    address: 0x27 # found after scan
+    update_interval: 5s
+    lambda: |-
+      static int page = 0;
+      page = (page + 1) % 2;
+      
+      unsigned long now = millis() / 1000;
+      unsigned long diff = now - id(last_update_timestamp);
+
+      if (page == 0) {
+        it.printf(0, 0, "Air:   %.1f C", id(temp_air).state);
+        it.printf(0, 1, "Water: %.1f C", id(temp_water).state);
+      } else {
+        it.printf(0, 0, "Height: %.1f cm", id(water_height).state);
+        it.printf(0, 1, "Last Sync: vor %lus", diff);
+      }
